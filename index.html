@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="hy">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Մի փոքրիկ գաղտնիք</title>
+<style>
+body {
+margin:0; min-height:100vh;
+display:grid; place-items:center;
+background:#f8f7f3; color:#51483f;
+font-family:Georgia,serif; text-align:center;
+}
+main {width:85%; max-width:380px;}
+.envelope {font-size:90px; cursor:pointer; margin:25px;}
+h2 {font-weight:normal;}
+input,button {
+padding:13px; border:1px solid #d8cec2;
+border-radius:8px; background:white;
+font-size:16px; margin:6px;
+}
+button {cursor:pointer;}
+#letter {display:none; line-height:1.9;}
+#hint {color:#8b8177; font-style:italic;}
+</style>
+</head>
+<body>
+<main>
+<div id="start">
+<h2>Մի փոքրիկ գաղտնիք քեզ համար…</h2>
+<div class="envelope" onclick="showCode()">✉️</div>
+<p>Կոդը 4 թիվ է։</p>
+<p id="hint">Հուշում՝ մի օր, որը չեմ մոռանա…</p>
+<div id="lock" style="display:none">
+<input id="code" type="password" inputmode="numeric" maxlength="4" placeholder="Մուտքագրիր կոդը">
+<br>
+<button onclick="openLetter()">Բացել նամակը</button>
+<p id="error"></p>
+</div>
+</div>
+<div id="letter">
+<div style="font-size:65px">🤍</div>
+<h2>Մի փոքրիկ խոսք քեզ…</h2>
+<p>Այս նամակը պատահական չէ։<br>
+Մնացածը թողնում եմ քո երևակայությանը։<br>
+Գուցե ժպտաս, գուցե մտածես…<br>
+Բայց մի բան հաստատ է՝<br>
+այս փոքրիկ գաղտնիքը հենց քեզ համար է։ 😉</p>
+<p>Անանուն…</p>
+</div>
+</main>
+<script>
+function showCode() {
+document.getElementById('lock').style.display='block';
+}
+async function openLetter() {
+const code=document.getElementById('code').value;
+const error=document.getElementById('error');
+try {
+const response=await fetch('/.netlify/functions/check-code',{
+method:'POST',
+headers:{'Content-Type':'application/json'},
+body:JSON.stringify({code})
+});
+const result=await response.json();
+if(result.correct) {
+document.getElementById('start').style.display='none';
+document.getElementById('letter').style.display='block';
+} else {
+error.textContent='Սխալ կոդ է։ Փորձիր նորից 🤍';
+}
+} catch(e) {
+error.textContent='Սերվերի հետ կապ չկա։';
+}
+}
+</script>
+</body>
+  </html>
